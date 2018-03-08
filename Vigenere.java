@@ -12,12 +12,37 @@ class Vigenere{
 		System.out.println(s);
 	}
 	
+	void primeFactor(ArrayList<Integer> diff){
+		ArrayList<Integer> primeList = new ArrayList<>();
+		
+		for(int i = 0; i < diff.size(); i++){
+			if(diff.get(i) < 2){
+				System.out.println("No prime factor");
+				System.exit(0);
+			}else{
+				int d = diff.get(i);
+				int test = 2;
+				while(test <= d){
+					if(d%test ==0){
+						primeList.add(test);
+						d /= test;
+					}else{
+						test++;
+					}
+				}
+				
+			}
+		}
+		System.out.println("primeList: " +primeList);
+	}
+	
 	void kasiski(ArrayList<String> trigrams, ArrayList<Integer> trigramPosition){
 		ArrayList<Integer> difference = new ArrayList<>();
 		for(int i = 0; i < trigramPosition.size()-1; i+=2){
 			difference.add(trigramPosition.get(i+1)-trigramPosition.get(i));
 		}
 		System.out.println("difference: " + difference);
+		primeFactor(difference);
 	}
 	
 	void findMatch(ArrayList<String> trigrams){
@@ -63,7 +88,7 @@ class Vigenere{
 		
 		Vigenere v = new Vigenere();
 		v.trigram(cipherText);
-		v.print(cipherText);
+		//v.print(cipherText);
 		
 	}
 	
