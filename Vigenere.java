@@ -13,8 +13,8 @@ class Vigenere{
 	
 	void findMatch(ArrayList<String> trigrams){
 		for(int i = 0; i < trigrams.size(); i++){
-			for(int j = i; j < trigrams.size() -1; j++){
-				if(trigrams.get(i) == trigrams.get(j)){
+			for(int j = i+1; j < trigrams.size(); j++){
+				if(trigrams.get(i).equals( trigrams.get(j))){
 					trigramMatch.add(trigrams.get(i));
 				}
 			}
