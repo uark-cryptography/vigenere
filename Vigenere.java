@@ -5,9 +5,22 @@ import java.util.*;
 class Vigenere{
 	
 	ArrayList<String> trigrams = new ArrayList<>();
+	ArrayList<String> trigramMatch = new ArrayList<>();
 	
 	void print(String s){
 		System.out.println(s);
+	}
+	
+	void findMatch(ArrayList<String> trigrams){
+		for(int i = 0; i < trigrams.size(); i++){
+			for(int j = i; j < trigrams.size() -1; j++){
+				if(trigrams.get(i) == trigrams.get(j)){
+					trigramMatch.add(trigrams.get(i));
+				}
+			}
+			
+		}
+		System.out.println("matches: " + trigramMatch);
 	}
 	
 	void trigram(String cT){
@@ -22,6 +35,7 @@ class Vigenere{
 			t = "";	
 		}
 		System.out.println(trigrams);
+		findMatch(trigrams);
 	}
 	
 	public static void main (String args[]){
