@@ -13,8 +13,22 @@ class Vigenere{
 	int upperBound = 10;
 	int keyLength = 4;
 	
-	void indexOfIndices(List<List<String>> indices){
-		
+	//stackoverflow.com/questions/6100712/
+	Map<Character, Integer> letterCount(String k){
+		Map<Character, Integer> charCount = new HashMap<>();
+		int counter = 0;
+		if (k != null) {
+			for (Character c : k.toCharArray()) {
+			  Integer count = charCount.get(c);
+			  int newCount = (count==null ? 1 : count+1);
+			  charCount.put(c, newCount);
+			}
+		}
+		return charCount;
+	}
+	
+	//converts each keyLength array into string for shift
+	void buildString(List<List<String>> indices){		
 		for(int k = lowerBound; k < upperBound; k++){
 			
 			StringBuilder sb = new StringBuilder();
@@ -25,13 +39,14 @@ class Vigenere{
 			String tmpStr = "";
 			
 			String[] s = new String[k];
-			for(int x = 0; x < k; x++){
+			for(int x = 0; x < k; x++){						//Shift string
 				for(int i = 0; i < str.length(); i+=k){
 					tmpStr += str.charAt(i+x);
 					s[x] = tmpStr;					
 				}
 				tmpStr = "";
 				System.out.println(s[x]);
+				letterCount(s[x]);
 				System.out.println();
 			}
 			
@@ -41,8 +56,8 @@ class Vigenere{
 	}
 	
 	
-	
-	void buildStrings(String cT){
+	//An array holding arrays of keyLength 4 through 9
+	void separateToKeyLength(String cT){
 		List<List<String>> indices = new ArrayList<>();
 		ArrayList<String> tmpList = new ArrayList<>();
 		String tmp = "";
@@ -59,7 +74,7 @@ class Vigenere{
 				indices.add(new ArrayList<String>(tmpList));
 				tmpList.clear();
 		}
-		indexOfIndices(indices);
+		buildString(indices);
 		
 		//System.out.println(indices);
 		//System.out.println();
@@ -174,7 +189,7 @@ class Vigenere{
 		v.likelyKeyLength(kasiskiTable);
 		System.out.println();
 		
-		v.buildStrings(cipherText);
+		v.separateToKeyLength(cipherText);
 		
 		//System.out.println(cipherText);
 		
