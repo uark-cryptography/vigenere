@@ -12,28 +12,69 @@ class Vigenere{
 		System.out.println(s);
 	}
 	
+	void likelyKeyLength(ArrayList<Integer> primeList){
+		int highestCount = -1;
+		int highestCountKey = 0;
+		int count = 0;
+		for(int i = 0; i < primeList.size(); i++){
+			for(int j = i+1; j < primeList.size() -1; j++){
+				if(primeList.get(i) == primeList.get(j)){
+					count++;
+				}
+				if(count > highestCount){
+					highestCount = count;
+					highestCountKey = primeList.get(i);
+				}
+			}
+		}
+		System.out.println("Kasiski Likely Key: " + highestCountKey );
+	}
+	
 	void primeFactor(ArrayList<Integer> diff){
-		ArrayList<Integer> primeList = new ArrayList<>();
 		
+		ArrayList<Integer> primeListTmp = new ArrayList<>();
+		//Map<Integer,ArrayList<Integer>> factorMap = new HashMap<>();
 		for(int i = 0; i < diff.size(); i++){
+			int d = diff.get(i);
 			if(diff.get(i) < 2){
 				System.out.println("No prime factor");
 				System.exit(0);
 			}else{
-				int d = diff.get(i);
 				int test = 2;
 				while(test <= d){
-					if(d%test ==0){
-						primeList.add(test);
+					if(d%test == 0){
+						primeListTmp.add(test);						
 						d /= test;
 					}else{
 						test++;
 					}
-				}
-				
+				}				
+			}
+			//if(!factorMap.containsKey(d)){
+				//ArrayList<Integer> primeList = new ArrayList<>(primeListTmp);
+				//factorMap.put(diff.get(i),primeList);
+			
+		
+		/*//TreeMap<Integer, ArrayList<Integer>> sortedFactorMap = new TreeMap<Integer, ArrayList<Integer>> (factorMap);
+		//System.out.println("factorMap: " +sortedFactorMap);
+		
+		Map<Integer, Integer> count = new HashMap<>();
+		for(int i = 0; i < diff.size()-1; i++){
+			int count1 = 0;
+			for(int j = i+1; j < diff.size(); j++){
+				if(diff.get(i).equals(diff.get(j))){
+					count1++;
+				}				
+			}
+			if(!count.containsKey(diff.get(i))){
+				count.put(diff.get(i), count1+1);
 			}
 		}
-		System.out.println("primeList: " +primeList);
+		//likelyKeyLength(diff, primeList);
+		System.out.println(count);*/
+		}
+		System.out.println(primeListTmp);
+		likelyKeyLength(primeListTmp);
 	}
 	
 	void kasiski(ArrayList<String> trigrams, ArrayList<Integer> trigramPosition){
@@ -41,6 +82,7 @@ class Vigenere{
 		for(int i = 0; i < trigramPosition.size()-1; i+=2){
 			difference.add(trigramPosition.get(i+1)-trigramPosition.get(i));
 		}
+		Collections.sort(difference);
 		System.out.println("difference: " + difference);
 		primeFactor(difference);
 	}
@@ -70,7 +112,7 @@ class Vigenere{
 			trigrams.add(t);
 			t = "";	
 		}
-		System.out.println(trigrams);
+		//System.out.println(trigrams);
 		findMatch(trigrams);
 	}
 	
@@ -78,7 +120,7 @@ class Vigenere{
 		String cipherText = "";
 		
 		try {
-			BufferedReader cipherReader = new BufferedReader(new FileReader("input.txt"));
+			BufferedReader cipherReader = new BufferedReader(new FileReader("input_hw.txt"));
 			cipherText = cipherReader.readLine();
 			cipherReader.close();
 		} catch (Exception e) {
