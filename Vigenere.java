@@ -15,9 +15,9 @@ class Vigenere{
 	void likelyKeyLength(ArrayList<Integer> primeList){
 		int highestCount = -1;
 		int highestCountKey = 0;
-		int count = 0;
-		for(int i = 0; i < primeList.size(); i++){
-			for(int j = i+1; j < primeList.size() -1; j++){
+		for(int i = 0; i < primeList.size()-1; i++){
+			int count = 0;
+			for(int j = i+1; j < primeList.size(); j++){
 				if(primeList.get(i) == primeList.get(j)){
 					count++;
 				}
@@ -33,7 +33,7 @@ class Vigenere{
 	//finds difference in matched position returns prime factors list
 	ArrayList<Integer> kasiski(ArrayList<String> trigrams, ArrayList<Integer> trigramPosition){
 		ArrayList<Integer> diff = new ArrayList<>();
-		ArrayList<Integer> primeListTmp = new ArrayList<>();
+		ArrayList<Integer> primeList = new ArrayList<>();
 		
 		//find difference
 		for(int i = 0; i < trigramPosition.size()-1; i+=2){
@@ -51,7 +51,7 @@ class Vigenere{
 				int test = 2;
 				while(test <= d){
 					if(d%test == 0){
-						primeListTmp.add(test);						
+						primeList.add(test);						
 						d /= test;
 					}else{
 						test++;
@@ -59,7 +59,8 @@ class Vigenere{
 				}				
 			}
 		}
-		return primeListTmp;
+		System.out.println(primeList);
+		return primeList;
 	}
 	
 	//searches for matches creates list of matches and their positions
