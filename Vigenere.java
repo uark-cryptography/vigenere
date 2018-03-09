@@ -8,22 +8,28 @@ class Vigenere{
 	ArrayList<String> trigramMatch = new ArrayList<>();
 	ArrayList<Integer> trigramPosition = new ArrayList<>();
 	
+	
 	int lowerBound = 4;
 	int upperBound = 10;
+	int keyLength = 4;
 	
 	void indexOfIndices(String cT){
+		ArrayList<ArrayList<String>> indices = new ArrayList<>();
 		ArrayList<String> tmpList = new ArrayList<>();
-		//for(int i = lowerBound; i < upperBound; i++){
-			
-			for(int j = 0; j < cT.length(); j++){
-				String tmp = "";				
-				for(int k = j; k < j+lowerBound; k++){				
-					tmp += cT.charAt(k);
+		String tmp = "";
+		for(int key = lowerBound; key < upperBound; key++){
+			for(int i = 0; i < cT.length()-(key-1); i++){					
+				for(int j = i; j < i + keyLength; j++){				
+					tmp += cT.charAt(j);
 				}
 				tmpList.add(tmp);
-				tmp = "";	
-			}
-		//}
+				tmp = "";								
+			}			
+				keyLength++;
+		}
+		indices.add(tmpList);
+		System.out.println(indices);
+		System.out.println();
 		
 	}
 	
@@ -74,7 +80,7 @@ class Vigenere{
 				}				
 			}
 		}
-		//System.out.println(primeList);
+		System.out.println(primeList);
 		return primeList;
 	}
 	
@@ -133,8 +139,11 @@ class Vigenere{
 				
 		//find likely Key Length part a
 		v.likelyKeyLength(kasiskiTable);
+		System.out.println();
 		
-		//v.indexOfIndices(cipherText);
+		v.indexOfIndices(cipherText);
+		
+		System.out.println(cipherText);
 		
 	}
 	
