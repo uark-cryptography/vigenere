@@ -33,7 +33,6 @@ class Vigenere{
 	void primeFactor(ArrayList<Integer> diff){
 		
 		ArrayList<Integer> primeListTmp = new ArrayList<>();
-		//Map<Integer,ArrayList<Integer>> factorMap = new HashMap<>();
 		for(int i = 0; i < diff.size(); i++){
 			int d = diff.get(i);
 			if(diff.get(i) < 2){
@@ -50,30 +49,8 @@ class Vigenere{
 					}
 				}				
 			}
-			//if(!factorMap.containsKey(d)){
-				//ArrayList<Integer> primeList = new ArrayList<>(primeListTmp);
-				//factorMap.put(diff.get(i),primeList);
-			
-		
-		/*//TreeMap<Integer, ArrayList<Integer>> sortedFactorMap = new TreeMap<Integer, ArrayList<Integer>> (factorMap);
-		//System.out.println("factorMap: " +sortedFactorMap);
-		
-		Map<Integer, Integer> count = new HashMap<>();
-		for(int i = 0; i < diff.size()-1; i++){
-			int count1 = 0;
-			for(int j = i+1; j < diff.size(); j++){
-				if(diff.get(i).equals(diff.get(j))){
-					count1++;
-				}				
-			}
-			if(!count.containsKey(diff.get(i))){
-				count.put(diff.get(i), count1+1);
-			}
 		}
-		//likelyKeyLength(diff, primeList);
-		System.out.println(count);*/
-		}
-		System.out.println(primeListTmp);
+		//System.out.println(primeListTmp);
 		likelyKeyLength(primeListTmp);
 	}
 	
@@ -83,7 +60,7 @@ class Vigenere{
 			difference.add(trigramPosition.get(i+1)-trigramPosition.get(i));
 		}
 		Collections.sort(difference);
-		System.out.println("difference: " + difference);
+		//System.out.println("difference: " + difference);
 		primeFactor(difference);
 	}
 	
@@ -98,8 +75,7 @@ class Vigenere{
 			}
 			
 		}
-		System.out.println("matches: " + trigramMatch);
-		System.out.println("position: " + trigramPosition);
+		System.out.println("Trigram: " + trigramMatch);
 		kasiski(trigramMatch, trigramPosition);
 	}
 	
@@ -112,7 +88,6 @@ class Vigenere{
 			trigrams.add(t);
 			t = "";	
 		}
-		//System.out.println(trigrams);
 		findMatch(trigrams);
 	}
 	
@@ -130,7 +105,6 @@ class Vigenere{
 		
 		Vigenere v = new Vigenere();
 		v.trigram(cipherText);
-		//v.print(cipherText);
 		
 	}
 	
