@@ -13,11 +13,41 @@ class Vigenere{
 	int upperBound = 10;
 	int keyLength = 4;
 	
-	void indexOfIndices(String cT){
-		ArrayList<ArrayList<String>> indices = new ArrayList<>();
+	void indexOfIndices(List<List<String>> indices){
+		
+		for(int k = lowerBound; k < upperBound; k++){
+			
+			StringBuilder sb = new StringBuilder();
+			for(String s : indices.get(k-4)){
+				sb.append(s);
+			}
+			String str = sb.toString();
+			String tmpStr = "";
+			
+			String[] s = new String[k];
+			for(int x = 0; x < k; x++){
+				for(int i = 0; i < str.length(); i+=k){
+					tmpStr += str.charAt(i+x);
+					s[x] = tmpStr;					
+				}
+				tmpStr = "";
+				System.out.println(s[x]);
+				System.out.println();
+			}
+			
+			//System.out.println(indices.get(k-4));
+		}
+		
+	}
+	
+	
+	
+	void buildStrings(String cT){
+		List<List<String>> indices = new ArrayList<>();
 		ArrayList<String> tmpList = new ArrayList<>();
 		String tmp = "";
 		for(int key = lowerBound; key < upperBound; key++){
+			tmpList = new ArrayList<String>(tmpList);
 			for(int i = 0; i < cT.length()-(key-1); i++){					
 				for(int j = i; j < i + keyLength; j++){				
 					tmp += cT.charAt(j);
@@ -26,10 +56,13 @@ class Vigenere{
 				tmp = "";								
 			}			
 				keyLength++;
+				indices.add(new ArrayList<String>(tmpList));
+				tmpList.clear();
 		}
-		indices.add(tmpList);
-		System.out.println(indices);
-		System.out.println();
+		indexOfIndices(indices);
+		
+		//System.out.println(indices);
+		//System.out.println();
 		
 	}
 	
@@ -80,7 +113,7 @@ class Vigenere{
 				}				
 			}
 		}
-		System.out.println(primeList);
+		//System.out.println(primeList);
 		return primeList;
 	}
 	
@@ -141,9 +174,9 @@ class Vigenere{
 		v.likelyKeyLength(kasiskiTable);
 		System.out.println();
 		
-		v.indexOfIndices(cipherText);
+		v.buildStrings(cipherText);
 		
-		System.out.println(cipherText);
+		//System.out.println(cipherText);
 		
 	}
 	
