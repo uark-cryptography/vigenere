@@ -8,7 +8,22 @@ class Vigenere{
 	ArrayList<String> trigramMatch = new ArrayList<>();
 	ArrayList<Integer> trigramPosition = new ArrayList<>();
 	
-	void indexOfIndices(int keyLength){
+	int lowerBound = 4;
+	int upperBound = 10;
+	
+	void indexOfIndices(String cT){
+		ArrayList<String> tmpList = new ArrayList<>();
+		//for(int i = lowerBound; i < upperBound; i++){
+			
+			for(int j = 0; j < cT.length(); j++){
+				String tmp = "";				
+				for(int k = j; k < j+lowerBound; k++){				
+					tmp += cT.charAt(k);
+				}
+				tmpList.add(tmp);
+				tmp = "";	
+			}
+		//}
 		
 	}
 	
@@ -16,9 +31,9 @@ class Vigenere{
 		int highestCount = -1;
 		int highestCountKey = 0;
 		for(int i = 0; i < primeList.size()-1; i++){
-			int count = 0;
+			int count = 1;
 			for(int j = i+1; j < primeList.size(); j++){
-				if(primeList.get(i) == primeList.get(j)){
+				if(primeList.get(i) == primeList.get(j) && primeList.get(i) > 2){
 					count++;
 				}
 				if(count > highestCount){
@@ -27,7 +42,7 @@ class Vigenere{
 				}
 			}
 		}
-		System.out.println("Kasiski Likely Key Length: " + highestCountKey );
+		System.out.println("Kasiski Likely Key Length: " + highestCountKey);
 	}
 	
 	//finds difference in matched position returns prime factors list
@@ -59,7 +74,7 @@ class Vigenere{
 				}				
 			}
 		}
-		System.out.println(primeList);
+		//System.out.println(primeList);
 		return primeList;
 	}
 	
@@ -92,7 +107,7 @@ class Vigenere{
 	
 	String readFromFile(){
 		try {
-			BufferedReader cipherReader = new BufferedReader(new FileReader("input_hw.txt"));
+			BufferedReader cipherReader = new BufferedReader(new FileReader("input_ex.txt"));
 			String cipherText = cipherReader.readLine();
 			cipherReader.close();
 			return cipherText;
@@ -118,6 +133,8 @@ class Vigenere{
 				
 		//find likely Key Length part a
 		v.likelyKeyLength(kasiskiTable);
+		
+		//v.indexOfIndices(cipherText);
 		
 	}
 	
