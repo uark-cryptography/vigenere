@@ -13,10 +13,31 @@ class Vigenere{
 	int upperBound = 10;
 	int keyLength = 4;
 	
+	
+	void indexOfCoincidence(Map<Character, Integer> charCount, double stringLength){
+		
+		double indOC = 0.0;
+		double sum = 0.0;
+		
+		//stringLength = 30;
+		
+		for(int value : charCount.values()){
+			sum += (value*(value-1));
+			
+		//System.out.print(value + ", " );
+		}
+		//System.out.println("sum: " +sum);
+		//System.out.println(charCount.values());
+		
+		indOC = (sum)/(stringLength*(stringLength-1));
+		System.out.printf("indOC: " + "%.4f",indOC);
+		System.out.println();		
+	}
+	
 	//stackoverflow.com/questions/6100712/
-	Map<Character, Integer> letterCount(String k){
+	Map<Character, Integer> charCount(String k){
 		Map<Character, Integer> charCount = new HashMap<>();
-		int counter = 0;
+		//k="abirdinhandisworthtwointhebush";
 		if (k != null) {
 			for (Character c : k.toCharArray()) {
 			  Integer count = charCount.get(c);
@@ -24,32 +45,43 @@ class Vigenere{
 			  charCount.put(c, newCount);
 			}
 		}
+		//System.out.println(charCount);	
 		return charCount;
 	}
 	
 	//converts each keyLength array into string for shift
 	void buildString(List<List<String>> indices){		
+			int key = 0;
 		for(int k = lowerBound; k < upperBound; k++){
 			
+			int stringLength = 0;
+			//System.out.println(indices.get(key).get(0));
+			
 			StringBuilder sb = new StringBuilder();
-			for(String s : indices.get(k-4)){
-				sb.append(s);
-			}
+			sb.append(indices.get(key));
+			
+			//for(String s : indices.get(key)){
+			//	sb.append(s);
+			//}
 			String str = sb.toString();
+			System.out.println(str);
+			//sb.setLength(0);
+			//System.out.println(str);
 			String tmpStr = "";
 			
 			String[] s = new String[k];
 			for(int x = 0; x < k; x++){						//Shift string
 				for(int i = 0; i < str.length(); i+=k){
-					tmpStr += str.charAt(i+x);
+					tmpStr += str.charAt(i);
 					s[x] = tmpStr;					
 				}
 				tmpStr = "";
-				System.out.println(s[x]);
-				letterCount(s[x]);
-				System.out.println();
+				
+				System.out.println("Key: " + k + " String: " + (x+1) );
+				stringLength = s[x].length();
+				indexOfCoincidence(charCount(s[x]),stringLength);
 			}
-			
+			key++;
 			//System.out.println(indices.get(k-4));
 		}
 		
@@ -74,6 +106,7 @@ class Vigenere{
 				indices.add(new ArrayList<String>(tmpList));
 				tmpList.clear();
 		}
+		//System.out.println(indices.get(0));
 		buildString(indices);
 		
 		//System.out.println(indices);
