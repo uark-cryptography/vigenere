@@ -8,8 +8,8 @@ class Vigenere{
 	ArrayList<String> trigramMatch = new ArrayList<>();
 	ArrayList<Integer> trigramPosition = new ArrayList<>();
 	
-	void print(String s){
-		System.out.println(s);
+	void indexOfIndices(int keyLength){
+		
 	}
 	
 	void likelyKeyLength(ArrayList<Integer> primeList){
@@ -27,12 +27,21 @@ class Vigenere{
 				}
 			}
 		}
-		System.out.println("Kasiski Likely Key: " + highestCountKey );
+		System.out.println("Kasiski Likely Key Length: " + highestCountKey );
 	}
 	
-	void primeFactor(ArrayList<Integer> diff){
-		
+	//finds difference in matched position returns prime factors list
+	ArrayList<Integer> kasiski(ArrayList<String> trigrams, ArrayList<Integer> trigramPosition){
+		ArrayList<Integer> diff = new ArrayList<>();
 		ArrayList<Integer> primeListTmp = new ArrayList<>();
+		
+		//find difference
+		for(int i = 0; i < trigramPosition.size()-1; i+=2){
+			diff.add(trigramPosition.get(i+1)-trigramPosition.get(i));
+		}
+		
+		//find prime factors
+		Collections.sort(diff);				
 		for(int i = 0; i < diff.size(); i++){
 			int d = diff.get(i);
 			if(diff.get(i) < 2){
@@ -50,20 +59,10 @@ class Vigenere{
 				}				
 			}
 		}
-		//System.out.println(primeListTmp);
-		likelyKeyLength(primeListTmp);
+		return primeListTmp;
 	}
 	
-	void kasiski(ArrayList<String> trigrams, ArrayList<Integer> trigramPosition){
-		ArrayList<Integer> difference = new ArrayList<>();
-		for(int i = 0; i < trigramPosition.size()-1; i+=2){
-			difference.add(trigramPosition.get(i+1)-trigramPosition.get(i));
-		}
-		Collections.sort(difference);
-		//System.out.println("difference: " + difference);
-		primeFactor(difference);
-	}
-	
+	//searches for matches creates list of matches and their positions
 	void findMatch(ArrayList<String> trigrams){
 		for(int i = 0; i < trigrams.size(); i++){
 			for(int j = i+1; j < trigrams.size(); j++){
@@ -72,39 +71,52 @@ class Vigenere{
 					trigramPosition.add(i+1);
 					trigramPosition.add(j+1);
 				}
-			}
-			
+			}			
 		}
 		System.out.println("Trigram: " + trigramMatch);
-		kasiski(trigramMatch, trigramPosition);
 	}
 	
-	void trigram(String cT){
-		String t = "";
-		for(int i = 0; i < cT.length()-2; i++){					
+	//Builds list of three char trigrams
+	ArrayList<String> trigram(String cipherText){
+		String tmp = "";
+		for(int i = 0; i < cipherText.length()-2; i++){					
 			for(int j = i; j < i+3; j++){				
-				t += cT.charAt(j);
+				tmp += cipherText.charAt(j);
 			}
-			trigrams.add(t);
-			t = "";	
+			trigrams.add(tmp);
+			tmp = "";	
 		}
-		findMatch(trigrams);
+		return trigrams;
+	}
+	
+	String readFromFile(){
+		try {
+			BufferedReader cipherReader = new BufferedReader(new FileReader("input_hw.txt"));
+			String cipherText = cipherReader.readLine();
+			cipherReader.close();
+			return cipherText;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} 
 	}
 	
 	public static void main (String args[]){
-		String cipherText = "";
-		
-		try {
-			BufferedReader cipherReader = new BufferedReader(new FileReader("input_hw.txt"));
-			cipherText = cipherReader.readLine();
-			cipherReader.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		} 
 		
 		Vigenere v = new Vigenere();
-		v.trigram(cipherText);
+		String cipherText = v.readFromFile();		
+		
+		//Build trigrams from cipher text
+		ArrayList<String> formattedTrigrams = new ArrayList<>(v.trigram(cipherText));
+		
+		//compare trigrams for match
+		v.findMatch(formattedTrigrams);
+		
+		//process matching trigrams and position
+		ArrayList<Integer> kasiskiTable = new ArrayList<>(v.kasiski(v.trigramMatch, v.trigramPosition));
+				
+		//find likely Key Length part a
+		v.likelyKeyLength(kasiskiTable);
 		
 	}
 	
