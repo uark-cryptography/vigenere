@@ -9,21 +9,19 @@ class Vigenere{
 	ArrayList<String> trigramMatch = new ArrayList<>();
 	ArrayList<Integer> trigramPosition = new ArrayList<>();
 	
-	
 	int lowerBound = 4;
 	int upperBound = 10;
 	int keyLength = 4;
 	
+	//part b table	
 	void printTable(int key, float avg, ArrayList<Float> indOC){
 		System.out.print(" " + key + "  |     ");
 		System.out.printf("%.3f",avg );
-		System.out.println("     | " + indOC);
-		
+		System.out.println("     | " + indOC);		
 	}
 	
-	float averageIOC(ArrayList<Float> iocArray){
-		
-		
+	//returns average index
+	float averageIOC(ArrayList<Float> iocArray){		
 		float sum = 0;
 		if(!iocArray.isEmpty()){
 			for(float val : iocArray){
@@ -31,55 +29,29 @@ class Vigenere{
 			}
 			return sum/iocArray.size();
 		}
-		/*
-		
-		avgMap.put(key, indOC.put);
-		
-		indOC_array.add(indOC);
-		
-		float avgSum = 0.0f;
-		for(int i = 0; i < indOC_array.size(); i++){
-			avgSum += indOC_array.get(i); 
-			System.out.println(avgSum);
-		}
-		float avg = 1.0f;
-		avg = avgSum / indOC_array.size();
-		
-		System.out.println(key);
-		*/
 		return 0;
 	}
 	
-	float indexOfCoincidence(Map<Character, Integer> charCount, float stringLength, int key){
-		
+	float indexOfCoincidence(Map<Character, Integer> charCount, float stringLength, int key){		
 		float indOC = 0;
 		float tmp = 0;
 		float sum = 0;
-		float[] indOCArray = new float[key];		
-		//stringLength = 30;
+		float[] indOCArray = new float[key];	
 		
 		for(int value : charCount.values()){
-			sum += (value*(value-1));			
-		//System.out.print(value + ", " );
+			sum += (value*(value-1));		
 		}
-		//System.out.println("sum: " +sum);
-		//System.out.println(charCount.values());
 		
 		tmp = (sum)/(stringLength*(stringLength-1));
-		//averageIOC(indOC, key);
-		//System.out.printf("indOC: " + "%.4f",indOC);
-		//System.out.println();
 		
 		DecimalFormat df = new DecimalFormat("0.000");
 		indOC = Float.parseFloat(df.format(tmp));
-		return indOC;
-		
+		return indOC;		
 	}
 	
 	//stackoverflow.com/questions/6100712/
 	Map<Character, Integer> charCount(String k){
 		Map<Character, Integer> charCount = new HashMap<>();
-		//k="abirdinhandisworthtwointhebush";
 		if (k != null) {
 			for (Character c : k.toCharArray()) {
 			  Integer count = charCount.get(c);
@@ -87,7 +59,6 @@ class Vigenere{
 			  charCount.put(c, newCount);
 			}
 		}
-		//System.out.println(charCount);	
 		return charCount;
 	}
 	
@@ -102,14 +73,6 @@ class Vigenere{
 		for(int k = lowerBound; k < upperBound; k++){
 			
 			int stringLength = 0;
-			//System.out.println(indices.get(key));
-			
-			//StringBuilder sb = new StringBuilder();
-			//sb.append(indices.get(key));
-			
-			//String tmp = sb.toString();
-			//String str = tmp.replaceAll("[,\\s]","");
-			//System.out.println(str);
 			String tmpStr = "";
 			
 			String[] s = new String[k];
@@ -120,15 +83,9 @@ class Vigenere{
 				}
 				tmpStr = "";
 				
-				//System.out.println(s[x]);
-				//System.out.println("Key: " + k + " String: " + (x+1) );
-				stringLength = s[x].length();
-				
+				stringLength = s[x].length();				
 				indOC = indexOfCoincidence(charCount(s[x]),stringLength, k);
-				iocArray.add(indOC);
-				
-				 
-				//indOC = indexOfCoincidence(charCount(s[x]),stringLength, k);
+				iocArray.add(indOC);				
 			}
 			key++;
 			avg = averageIOC(iocArray);
@@ -143,33 +100,7 @@ class Vigenere{
 		System.out.println("Probable key length is " + maxKey);
 	}
 	
-	
-	//An array holding arrays of keyLength 4 through 9
-	void separateToKeyLength(String cT){
-		List<List<String>> indices = new ArrayList<>();
-		ArrayList<String> tmpList = new ArrayList<>();
-		String tmp = "";
-		for(int key = lowerBound; key < upperBound; key++){
-			tmpList = new ArrayList<String>(tmpList);
-			for(int i = 0; i < cT.length()-(key-1); i++){					
-				for(int j = i; j < i + keyLength; j++){				
-					tmp += cT.charAt(j);
-				}
-				tmpList.add(tmp);
-				tmp = "";								
-			}			
-				keyLength++;
-				indices.add(new ArrayList<String>(tmpList));
-				tmpList.clear();
-		}
-		//System.out.println(indices.get(0));
-		//buildString(indices);
-		
-		//System.out.println(indices);
-		//System.out.println();
-		
-	}
-	
+	//probable key from kasiski table
 	void likelyKeyLength(ArrayList<Integer> primeList){
 		int highestCount = -1;
 		int highestCountKey = 0;
@@ -217,7 +148,6 @@ class Vigenere{
 				}				
 			}
 		}
-		//System.out.println(primeList);
 		return primeList;
 	}
 	
@@ -232,6 +162,7 @@ class Vigenere{
 				}
 			}			
 		}
+		System.out.println("Part A");
 		System.out.println("Trigram: " + trigramMatch);
 	}
 	
@@ -250,7 +181,7 @@ class Vigenere{
 	
 	String readFromFile(){
 		try {
-			BufferedReader cipherReader = new BufferedReader(new FileReader("input_ex.txt"));
+			BufferedReader cipherReader = new BufferedReader(new FileReader("input_hw.txt"));
 			String cipherText = cipherReader.readLine();
 			cipherReader.close();
 			return cipherText;
@@ -278,15 +209,11 @@ class Vigenere{
 		v.likelyKeyLength(kasiskiTable);
 		System.out.println();
 		
+		System.out.println("Part B");
 		System.out.println("Key | Average Index | Individiual Indices of Coincidence");
 		System.out.println("--------------------------------------------------------");
 		
-		//v.separateToKeyLength(cipherText);
-		v.buildString(cipherText);
-		
-		
-		//System.out.println(cipherText);
-		
+		//part b
+		v.buildString(cipherText);		
 	}
-	
 }
