@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.text.DecimalFormat;
 
 
 class Vigenere{
@@ -13,25 +14,66 @@ class Vigenere{
 	int upperBound = 10;
 	int keyLength = 4;
 	
+	void printTable(int key, float avg, ArrayList<Float> indOC){
+		System.out.print(" " + key + "  |     ");
+		System.out.printf("%.3f",avg );
+		System.out.println("     | " + indOC);
+		
+	}
 	
-	void indexOfCoincidence(Map<Character, Integer> charCount, double stringLength){
+	float averageIOC(ArrayList<Float> iocArray){
 		
-		double indOC = 0.0;
-		double sum = 0.0;
 		
+		float sum = 0;
+		if(!iocArray.isEmpty()){
+			for(float val : iocArray){
+				sum += val;
+			}
+			return sum/iocArray.size();
+		}
+		/*
+		
+		avgMap.put(key, indOC.put);
+		
+		indOC_array.add(indOC);
+		
+		float avgSum = 0.0f;
+		for(int i = 0; i < indOC_array.size(); i++){
+			avgSum += indOC_array.get(i); 
+			System.out.println(avgSum);
+		}
+		float avg = 1.0f;
+		avg = avgSum / indOC_array.size();
+		
+		System.out.println(key);
+		*/
+		return 0;
+	}
+	
+	float indexOfCoincidence(Map<Character, Integer> charCount, float stringLength, int key){
+		
+		float indOC = 0;
+		float tmp = 0;
+		float sum = 0;
+		float[] indOCArray = new float[key];		
 		//stringLength = 30;
 		
 		for(int value : charCount.values()){
-			sum += (value*(value-1));
-			
+			sum += (value*(value-1));			
 		//System.out.print(value + ", " );
 		}
 		//System.out.println("sum: " +sum);
 		//System.out.println(charCount.values());
 		
-		indOC = (sum)/(stringLength*(stringLength-1));
-		System.out.printf("indOC: " + "%.4f",indOC);
-		System.out.println();		
+		tmp = (sum)/(stringLength*(stringLength-1));
+		//averageIOC(indOC, key);
+		//System.out.printf("indOC: " + "%.4f",indOC);
+		//System.out.println();
+		
+		DecimalFormat df = new DecimalFormat("0.000");
+		indOC = Float.parseFloat(df.format(tmp));
+		return indOC;
+		
 	}
 	
 	//stackoverflow.com/questions/6100712/
@@ -50,39 +92,46 @@ class Vigenere{
 	}
 	
 	//converts each keyLength array into string for shift
-	void buildString(List<List<String>> indices){		
+	void buildString(String cT){		
 			int key = 0;
+			float indOC = 0;
+			float avg = 0;
+			ArrayList<Float> iocArray = new ArrayList<Float>();
 		for(int k = lowerBound; k < upperBound; k++){
 			
 			int stringLength = 0;
-			//System.out.println(indices.get(key).get(0));
+			//System.out.println(indices.get(key));
 			
-			StringBuilder sb = new StringBuilder();
-			sb.append(indices.get(key));
+			//StringBuilder sb = new StringBuilder();
+			//sb.append(indices.get(key));
 			
-			//for(String s : indices.get(key)){
-			//	sb.append(s);
-			//}
-			String str = sb.toString();
-			System.out.println(str);
-			//sb.setLength(0);
+			//String tmp = sb.toString();
+			//String str = tmp.replaceAll("[,\\s]","");
 			//System.out.println(str);
 			String tmpStr = "";
 			
 			String[] s = new String[k];
 			for(int x = 0; x < k; x++){						//Shift string
-				for(int i = 0; i < str.length(); i+=k){
-					tmpStr += str.charAt(i);
+				for(int i = x; i < cT.length()-k; i+=k){
+					tmpStr += cT.charAt(i);
 					s[x] = tmpStr;					
 				}
 				tmpStr = "";
 				
-				System.out.println("Key: " + k + " String: " + (x+1) );
+				//System.out.println(s[x]);
+				//System.out.println("Key: " + k + " String: " + (x+1) );
 				stringLength = s[x].length();
-				indexOfCoincidence(charCount(s[x]),stringLength);
+				
+				indOC = indexOfCoincidence(charCount(s[x]),stringLength, k);
+				iocArray.add(indOC);
+				
+				 
+				//indOC = indexOfCoincidence(charCount(s[x]),stringLength, k);
 			}
 			key++;
-			//System.out.println(indices.get(k-4));
+			avg = averageIOC(iocArray);
+			printTable(k,avg,iocArray);
+			iocArray.clear();
 		}
 		
 	}
@@ -107,7 +156,7 @@ class Vigenere{
 				tmpList.clear();
 		}
 		//System.out.println(indices.get(0));
-		buildString(indices);
+		//buildString(indices);
 		
 		//System.out.println(indices);
 		//System.out.println();
@@ -222,7 +271,12 @@ class Vigenere{
 		v.likelyKeyLength(kasiskiTable);
 		System.out.println();
 		
-		v.separateToKeyLength(cipherText);
+		System.out.println("Key | Average Index | Individiual Indices of Coincidence");
+		System.out.println("--------------------------------------------------------");
+		
+		//v.separateToKeyLength(cipherText);
+		v.buildString(cipherText);
+		
 		
 		//System.out.println(cipherText);
 		
