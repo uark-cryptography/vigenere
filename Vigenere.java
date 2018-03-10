@@ -96,6 +96,8 @@ class Vigenere{
 			int key = 0;
 			float indOC = 0;
 			float avg = 0;
+			float maxAvg = -1;
+			int maxKey = -1;
 			ArrayList<Float> iocArray = new ArrayList<Float>();
 		for(int k = lowerBound; k < upperBound; k++){
 			
@@ -132,8 +134,13 @@ class Vigenere{
 			avg = averageIOC(iocArray);
 			printTable(k,avg,iocArray);
 			iocArray.clear();
+			
+			if(avg > maxAvg){
+				maxAvg = avg;
+				maxKey = k;
+			}
 		}
-		
+		System.out.println("Probable key length is " + maxKey);
 	}
 	
 	
