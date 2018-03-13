@@ -261,8 +261,7 @@ class Vigenere{
             s2Freq = null;
         }
 
-        BigDecimal x = (BigDecimal.ONE).divide(n.multiply(m), 5 , RoundingMode.HALF_DOWN);
-        return x.multiply(index);
+        return index.divide(n.multiply(m), 3 , RoundingMode.HALF_UP);
     }
 
     private static ArrayList<ArrayList<BigDecimal>> mutualIndiciesOfRotatedBlocks(
@@ -271,36 +270,127 @@ class Vigenere{
         int numberOfBlocks = blocks.size();
         ArrayList<ArrayList<BigDecimal>> indicies = new ArrayList<>();
 
-        int jOffset = 5;
+        int jOffset = numberOfBlocks - 2;
         for (int i = 1; i <= numberOfBlocks; i += 1) {
             String iBlock = blocks.get(i - 1);
             for (int j = numberOfBlocks - jOffset; j <= numberOfBlocks; j += 1) {
-                System.out.print(i + ", " + j + " ");
+                ArrayList<BigDecimal> curIndicies = new ArrayList<>();
                 String jBlock = blocks.get(j - 1);
                 for (int x = 0; x < alphabet.length(); x += 1) {
-                    System.out.print(mutualIndexOfCoincidence(iBlock, shiftString(jBlock, x)) + ", ");
+                    curIndicies.add(mutualIndexOfCoincidence(
+                        iBlock,
+                        shiftString(jBlock, x)
+                    ));
                 }
-                System.out.print("\n");
+
+                indicies.add(curIndicies);
             }
             jOffset -= 1;
         }
-        
         return indicies;
     }
 
+    private static BigDecimal UPPER_LIMIT = new BigDecimal("0.065");
+    private static void printRelations(
+        int numberOfBlocks,
+        ArrayList<ArrayList<BigDecimal>> mutualIndicies
+    ) {
+        ArrayList<Integer> shifts = new ArrayList<>();
+
+        System.out.println(" i | j | shift ");
+        System.out.println("---------------");
+        int counter = 0;
+        int jOffset = numberOfBlocks - 2;
+        BigDecimal b;
+        for (int i = 1; i <= numberOfBlocks; i += 1) {
+            for (int j = numberOfBlocks - jOffset; j <= numberOfBlocks; j += 1) {
+                ArrayList<BigDecimal> curIndicies = mutualIndicies.get(counter);
+                counter += 1;
+                for (int x = 0; x < alphabet.length(); x += 1) {
+                    b = curIndicies.get(x);
+                    if (b.compareTo(UPPER_LIMIT) > -1) {
+                        System.out.println(" " +i  +" | " + j + " | " + x);
+                    }
+                }
+            }
+            jOffset -= 1;
+        }
+    }
+
+    private static void guessKeywordAndDecode(
+        String cipherText, 
+        int keywordLength, 
+        ArrayList<Integer> relativeShifts
+    ) {
+        System.out.println(" keyword | decoded");
+        System.out.println("-----------------");
+        String keyword = "";
+        for (int i = 0; i < alphabet.length(); i += 1) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(shiftCharacter('a', i));
+            for (int j = 0; j < (keywordLength - 1); j += 1) {
+                Integer shift = relativeShifts.get(j);
+                sb.append(shiftCharacter('a', i + shift));
+            }
+
+            keyword = sb.toString();
+            System.out.print(" " + keyword + " | ");
+
+            sb = new StringBuilder();
+            for (int j = 0; j < cipherText.length(); j += 1) {
+                char curChar = cipherText.charAt(j);
+                int shift = (int)keyword.charAt(j % keywordLength) - 97;
+                sb.append(shiftCharacter(curChar, -shift));
+            }
+            System.out.print(sb.toString() + "\n");
+        }
+    }
+
+
     // HELPERS
+
+    private static void printMutualIndiciesOfCoincidence(
+        int numberOfBlocks,
+        ArrayList<ArrayList<BigDecimal>> indicies
+    ) {
+        System.out.println("Block | Mutual Indices of Coincidence");
+        System.out.println("B_i | B_j |    0      1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17     18     19     20     21     22     23    24      25");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+        int counter = 0;
+        int jOffset = numberOfBlocks - 2;
+        for (int i = 1; i <= numberOfBlocks; i += 1) {
+            for (int j = numberOfBlocks - jOffset; j <= numberOfBlocks; j += 1) {
+                System.out.print(" " + i + "  |  " + j + "  | ");
+                System.out.println(indicies.get(counter));
+                counter += 1;
+            }
+            jOffset -= 1;
+        }
+    }
 
     private static String shiftString(String s, int n){
         StringBuilder sb = new StringBuilder();
-       for (int i = 0; i < s.length(); i++) {
-           char c = s.charAt(i);
-           if       (c >= 'a' && c <= 'm') c += n;
-           else if  (c >= 'A' && c <= 'M') c += n;
-           else if  (c >= 'n' && c <= 'z') c -= n;
-           else if  (c >= 'N' && c <= 'Z') c -= n;
-           sb.append(c);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            c = shiftCharacter(c, n);
+            sb.append(c);
        }
        return sb.toString();
+    }
+
+    private static char shiftCharacter(char c, int n) {
+        c = Character.toLowerCase(c);
+        c += n;
+
+        if (c > 122) {
+            int diff = c - 122;
+            return (char)(96 + diff);
+        } else if (c < 97) {
+            int diff = 97 - c;
+            return (char)(123 - diff);
+        } 
+        return c;
     }
 
     private static String readFromFile(String filename) {
@@ -318,37 +408,60 @@ class Vigenere{
     }
     
     public static void main (String args[]){
-        String cipherText = readFromFile("input_ex.txt");
-        
-        // Find list of trigrams from cipher text
-        ArrayList<String> formattedTrigrams = findTriagrams(cipherText);
-        
-        // Compare trigrams for match
-        SimpleImmutableEntry<ArrayList<String>, ArrayList<Integer>> result =
-            findTrigramMatches(formattedTrigrams);
-        ArrayList<String> trigramMatch = result.getKey();
-        ArrayList<Integer> trigramPosition = result.getValue();
+        if (args.length == 0 || (!args[0].equals("a") && !args[0].equals("b"))) {
+            System.out.println("Please pass in 'a' or 'b' as an argument.");
+            return;
+        }
 
-        System.out.println("Part A");
-        System.out.println("Trigrams: " + trigramMatch);
-        
-        ArrayList<Integer> kasiskiTable = getKasiskiTable(trigramMatch, trigramPosition);
-        int kasikiKey = likelyKeyLength(kasiskiTable);
-        System.out.println("Kasiski Likely Key Length: " + kasikiKey);
-        
-        System.out.println("\nPart B");
-        System.out.println("Key | Average Index | Individiual Indices of Coincidence");
-        System.out.println("--------------------------------------------------------");
-        int keyLength = buildString(cipherText);      
-        System.out.println("Probable key length is " + keyLength);
+        String cipherText = readFromFile("input_hw.txt");
+            
+        if (args[0].equals("a")) {
+            // Find list of trigrams from cipher text
+            ArrayList<String> formattedTrigrams = findTriagrams(cipherText);
+            
+            // Compare trigrams for match
+            SimpleImmutableEntry<ArrayList<String>, ArrayList<Integer>> result =
+                findTrigramMatches(formattedTrigrams);
+            ArrayList<String> trigramMatch = result.getKey();
+            ArrayList<Integer> trigramPosition = result.getValue();
 
-        System.out.println("\nPart C");
-        ArrayList<String> blocks = buildBlocks(cipherText, keyLength);
-        BigDecimal index = mutualIndexOfCoincidence(
-            "abirdinhandisworthtwointhebush",
-            "astitchintimesavesnine"
-        );
-        System.out.println(index);
-        // mutualIndiciesOfRotatedBlocks(blocks);
+            System.out.println("Part A");
+            System.out.println("Trigrams: " + trigramMatch);
+            
+            ArrayList<Integer> kasiskiTable = getKasiskiTable(trigramMatch, trigramPosition);
+            int kasikiKey = likelyKeyLength(kasiskiTable);
+            System.out.println("Kasiski Likely Key Length: " + kasikiKey);
+            
+            System.out.println("\nPart B");
+            System.out.println("Key | Average Index | Individiual Indices of Coincidence");
+            System.out.println("--------------------------------------------------------");
+            int keyLength = buildString(cipherText);      
+            System.out.println("Probable key length is " + keyLength);
+
+            System.out.println("\nPart C");
+            ArrayList<String> blocks = buildBlocks(cipherText, keyLength);
+
+            ArrayList<ArrayList<BigDecimal>> mutualIndicies =
+                mutualIndiciesOfRotatedBlocks(blocks);
+
+            printMutualIndiciesOfCoincidence(blocks.size(), mutualIndicies);
+
+            System.out.println();
+            printRelations(blocks.size(), mutualIndicies);
+
+            System.out.println(
+                "\nPlease solve the system of equations, and pass the keylength " +
+                "& relatives shifts them in to part b as 'java Vigenere [keylength] " +
+                "[shift1] [shift2] ...'"
+            );
+        } else if (args[0].equals("b")) {
+            int keyworkdLength = Integer.parseInt(args[1]);
+            ArrayList<Integer> relativeShifts = new ArrayList<>();
+            for (int i = 0; i < (keyworkdLength - 1); i += 1) {
+                relativeShifts.add(Integer.parseInt(args[2 + i]));
+            }
+
+            guessKeywordAndDecode(cipherText, keyworkdLength, relativeShifts);
+        }
     }
 }
